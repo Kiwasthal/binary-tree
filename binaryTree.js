@@ -71,12 +71,6 @@ class BinarySeachTree {
     root.right = this.deleteNode(x, root.right);
     return root;
   }
-  inorder(root = this.root) {
-    if (!root) return;
-    this.inorder(root.left);
-    console.log(root.datum);
-    this.inorder(root.right);
-  }
   find(x, root = this.root) {
     if (root === null) return null;
     if (root.datum === x) return root;
@@ -95,6 +89,24 @@ class BinarySeachTree {
       queue.shift();
     }
     if (!callback) return print;
+  }
+  inorder(callback, root = this.root, print = []) {
+    if (!root) return;
+    this.inorder(root.left);
+    callback ? callback(root) : print.push(root.datum);
+    this.inorder(root.right);
+  }
+  preorder(callback, root = this.root, print = []) {
+    if (!root) return;
+    callback ? callback(root) : print.push(root.datum);
+    this.inorder(root.left);
+    this.inorder(root.right);
+  }
+  postorder(callback, root = this.root, print = []) {
+    if (!root) return;
+    this.inorder(root.left);
+    this.inorder(root.right);
+    callback ? callback(root) : print.push(root.datum);
   }
 }
 
