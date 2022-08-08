@@ -32,49 +32,75 @@ class BinarySeachTree {
 
     return node;
   }
-  searchNode(x, root) {
+  searchNode(x, root = this.root) {
     if (root == null) return null;
     else if (root.datum === x) return root;
     else if (x < root.datum) return this.searchNode(x, root.left);
     else if (x > root.datum) return this.searchNode(x, root.right);
   }
-  insertNode(x, root) {
+  insertNode(x, root = this.root) {
     if (this.root === null) this.root = new Node(x);
     else if (root.datum > x && !this.root.left) root.left = new Node(x);
     else if (root.datum < x && !this.root.right) root.right = new Node(x);
     else if (root.datum > x) this.insertNode(x, root.left);
     else if (root.datum < x) this.insertNode(x, root.right);
   }
-  deleteNode(x, root) {
-    if (root === null) return null;
-    if (x < root.datum) root.left = this.deleteNode(x, root.left);
-    else if (x > root.datum) root.right = this.deleteNode(x, root.right);
-    else {
-      if (root.left === null) return root.right;
-      else if (root.right === null) return root.left;
-      root.datum = this.minValue(root.right);
-      root.right = this.deleteNode(root.right, root.datum);
+  deleteNode(x, root = this.root) {
+    if (!root) return null;
+    if (x == root.datum) {
+      if (!root.left && !root.right) return null;
+      if (!root.left) return root.right;
+      if (!root.right) return root.left;
+      let temp = root.right;
+      let parent = null;
+
+      while (temp) {
+        if (!temp.left) break;
+        parent = temp;
+        temp = temp.left;
+      }
+
+      root.datum = temp.datum;
+      if (!parent) root.right = temp.right;
+      else if (!parent.left.right) parent.left = null;
+      else parent.left = temp.right;
+    } else if (x < root.datum) {
+      root.left = this.deleteNode(x, root.left);
+      return root;
     }
+    root.right = this.deleteNode(x, root.right);
     return root;
   }
-  minValue(root) {
-    let minV = root.datum;
-    while (root.left !== null) {
-      minV = root.left.datum;
-      root = root.left;
-    }
-    return minV;
-  }
-  inorder(root) {
+  inorder(root = this.root) {
     if (!root) return;
     this.inorder(root.left);
     console.log(root.datum);
     this.inorder(root.right);
   }
+  find(x, root = this.root) {
+    if (root === null) return null;
+    if (root.datum === x) return root;
+    if (x > root.datum) return this.find(x, root.right);
+    if (x < root.datum) return this.find(x, root.left);
+  }
+  levelOrder(callback) {
+    if (this.root === null) return;
+    let queue = [this.root];
+    let print = [];
+    while (queue.length) {
+      let cur = queue[0];
+      callback ? callback(cur) : print.push(cur.datum);
+      if (cur.left != null) queue.push(cur.left);
+      if (cur.right != null) queue.push(cur.right);
+      queue.shift();
+    }
+    if (!callback) return print;
+  }
 }
 
 const bst = new BinarySeachTree();
 bst.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-console.log(bst.inorder(bst.root));
-console.log(bst.deleteNode(23, bst.root));
-console.log(bst.inorder(bst.root));
+// bst.deleteNode(6345, bst.root);
+console.log(bst.inorder());
+console.log(bst.find(637));
+console.log(bst.levelOrder());
