@@ -13,7 +13,6 @@ let pruneDuplicates = arr => {
   }
   return prunedArray;
 };
-
 let height = -1;
 
 class BinarySeachTree {
@@ -122,13 +121,18 @@ class BinarySeachTree {
     callback ? callback(root) : print.push(root.datum);
     return print;
   }
+  findNodeHeight(x, root) {
+    if (root == null) return -1;
+    let leftH = this.findNodeHeight(x, root.left);
+    let rightH = this.findNodeHeight(x, root.right);
+    let res = Math.max(leftH, rightH) + 1;
+    if (root.datum === x) height = res;
+    return res;
+  }
   height(x, root = this.root) {
-    if (root === null) return -1;
-    let leftH = this.height(x, root.left);
-    let rightH = this.height(x, root.right);
-    let h = Math.max(leftH, rightH) + 1;
-    if (root.datum === x) height = h;
-    return h;
+    this.findNodeHeight(x, root);
+
+    return height;
   }
 
   depth(x, root = this.root) {
@@ -149,4 +153,5 @@ bst.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 // bst.deleteNode(6345, bst.root);
 console.log(bst.inorder());
 console.log(bst.levelOrder());
-console.log(bst.depth(6345));
+console.log(bst.depth(4));
+console.log(bst.height(4));
