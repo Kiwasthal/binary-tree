@@ -14,6 +14,8 @@ let pruneDuplicates = arr => {
   return prunedArray;
 };
 
+let height = -1;
+
 class BinarySeachTree {
   constructor() {
     this.root = null;
@@ -90,23 +92,55 @@ class BinarySeachTree {
     }
     if (!callback) return print;
   }
+  // levelOrderRec(callback, root = this.root, h = this.BSTheight(), print = []) {
+  //   if (root == null) return print;
+  //   print.push(root.datum);
+  //   if (h > 1) {
+  //     this.levelOrderRec(callback, root.left, h - 1, print);
+  //     this.levelOrderRec(callback, root.right, h - 1, print);
+  //   }
+  //   return print;
+  // }
   inorder(callback, root = this.root, print = []) {
     if (!root) return;
-    this.inorder(root.left);
+    this.inorder(callback, root.left, print);
     callback ? callback(root) : print.push(root.datum);
-    this.inorder(root.right);
+    this.inorder(callback, root.right, print);
+    return print;
   }
   preorder(callback, root = this.root, print = []) {
     if (!root) return;
     callback ? callback(root) : print.push(root.datum);
-    this.inorder(root.left);
-    this.inorder(root.right);
+    this.inorder(callback, root.left, print);
+    this.inorder(callback, root.right, print);
+    return print;
   }
   postorder(callback, root = this.root, print = []) {
     if (!root) return;
-    this.inorder(root.left);
-    this.inorder(root.right);
+    this.inorder(callback, root.left, print);
+    this.inorder(callback, root.right, print);
     callback ? callback(root) : print.push(root.datum);
+    return print;
+  }
+  height(x, root = this.root) {
+    if (root === null) return -1;
+    let leftH = this.height(x, root.left);
+    let rightH = this.height(x, root.right);
+    let h = Math.max(leftH, rightH) + 1;
+    if (root.datum === x) height = h;
+    return h;
+  }
+
+  depth(x, root = this.root) {
+    if (root === null) return -1;
+    let distance = -1;
+    if (
+      root.datum === x ||
+      (distance = this.depth(x, root.left)) >= 0 ||
+      (distance = this.depth(x, root.right)) >= 0
+    )
+      return distance + 1;
+    return distance;
   }
 }
 
@@ -114,5 +148,5 @@ const bst = new BinarySeachTree();
 bst.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 // bst.deleteNode(6345, bst.root);
 console.log(bst.inorder());
-console.log(bst.find(637));
 console.log(bst.levelOrder());
+console.log(bst.depth(6345));
