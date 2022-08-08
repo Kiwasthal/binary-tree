@@ -40,9 +40,9 @@ class BinarySeachTree {
     else if (x > root.datum) return this.searchNode(x, root.right);
   }
   insertNode(x, root = this.root) {
-    if (this.root === null) this.root = new Node(x);
-    else if (root.datum > x && !this.root.left) root.left = new Node(x);
-    else if (root.datum < x && !this.root.right) root.right = new Node(x);
+    if (root === null) root = new Node(x);
+    else if (root.datum > x && !root.left) root.left = new Node(x);
+    else if (root.datum < x && !root.right) root.right = new Node(x);
     else if (root.datum > x) this.insertNode(x, root.left);
     else if (root.datum < x) this.insertNode(x, root.right);
   }
@@ -91,15 +91,6 @@ class BinarySeachTree {
     }
     if (!callback) return print;
   }
-  // levelOrderRec(callback, root = this.root, h = this.BSTheight(), print = []) {
-  //   if (root == null) return print;
-  //   print.push(root.datum);
-  //   if (h > 1) {
-  //     this.levelOrderRec(callback, root.left, h - 1, print);
-  //     this.levelOrderRec(callback, root.right, h - 1, print);
-  //   }
-  //   return print;
-  // }
   inorder(callback, root = this.root, print = []) {
     if (!root) return;
     this.inorder(callback, root.left, print);
@@ -146,12 +137,58 @@ class BinarySeachTree {
       return distance + 1;
     return distance;
   }
+  isBalanced(root = this.root) {
+    const nodeHeight = node =>
+      node == null
+        ? 0
+        : Math.max(nodeHeight(node.left), nodeHeight(node.r)) + 1;
+    if (root == null) return true;
+    let leftH = nodeHeight(root.left);
+    let rightH = nodeHeight(root.right);
+
+    if (
+      Math.abs(leftH - rightH) <= 1 &&
+      this.isBalanced(root.left) == true &&
+      this.isBalanced(root.right) == true
+    )
+      return true;
+    return false;
+  }
+  rebalance() {
+    if (!this.isBalanced()) {
+      const newOrderedArr = this.inorder();
+      this.root = this.buildTree(newOrderedArr);
+    }
+  }
 }
 
 const bst = new BinarySeachTree();
 bst.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-// bst.deleteNode(6345, bst.root);
+
+console.log(bst.isBalanced());
+bst.insertNode(22);
+
+console.log(bst.isBalanced());
+bst.insertNode(2222);
+console.log(bst.isBalanced());
+bst.insertNode(2221);
+console.log(bst.isBalanced());
+bst.insertNode(3222);
+console.log(bst.isBalanced());
+bst.insertNode(4222);
+console.log(bst.isBalanced());
+bst.insertNode(112);
+bst.insertNode(113);
+bst.insertNode(111);
+bst.insertNode(102);
+bst.insertNode(105);
+bst.insertNode(106);
+bst.insertNode(221);
+bst.insertNode(332);
+bst.insertNode(182);
 console.log(bst.inorder());
-console.log(bst.levelOrder());
-console.log(bst.depth(4));
-console.log(bst.height(4));
+
+console.log(bst.isBalanced());
+bst.rebalance();
+console.log(bst.inorder());
+console.log(bst.isBalanced());
